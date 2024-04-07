@@ -50,14 +50,17 @@ class UserController extends Controller
     public function showUser(Request $request, $id)
     {
         try {
-            if ($user = User::findOrFail($id)) {
-                return response()->json([
-                    'status' => true,
-                    'message' => "User Details Get Successfully...!",
-                    'data' => $user
-                ]);
+            if (request()->user()->tokenCan('user:show')) { // SANCTUM:ABILITY
+                if ($user = User::findOrFail($id)) {
+                    return response()->json([
+                        'status' => true,
+                        'message' => "User Details Get Successfully...!",
+                        'data' => $user
+                    ]);
+                }
+                throw new \Exception('User details not found...!', 403);
             }
-            throw new \Exception('User details not found...!', 403);
+            throw new \Exception('User does not have permission to perform this operation...!', 403);
         } catch (\Exception $ex) {
             return response()->json(['status' => false, 'data' => [], 'message' => $ex->getMessage()], 404);
         }
@@ -69,13 +72,16 @@ class UserController extends Controller
     public function updateUser(UserUpdateRequest $request, $id)
     {
         try {
-            $user = User::findOrFail($id);
-            $user->update(['firstname' => $request->firstname, 'lastname' => $request->lastname, 'email' => $request->email, 'mobile' => $request->mobile, 'pincode' => $request->pincode, 'gender' => $request->gender, 'address' => $request->address, 'city' => $request->city, 'state' => $request->state, 'country' => $request->country, 'birthdate' => date('Y-m-d', strtotime($request->birthdate))]);
-            return response()->json([
-                'status' => true,
-                'data' => $user,
-                'message' => 'User Updated Successfully...!',
-            ], 201);
+            if (request()->user()->tokenCan('user:edit')) { // SANCTUM:ABILITY
+                $user = User::findOrFail($id);
+                $user->update(['firstname' => $request->firstname, 'lastname' => $request->lastname, 'email' => $request->email, 'mobile' => $request->mobile, 'pincode' => $request->pincode, 'gender' => $request->gender, 'address' => $request->address, 'city' => $request->city, 'state' => $request->state, 'country' => $request->country, 'birthdate' => date('Y-m-d', strtotime($request->birthdate))]);
+                return response()->json([
+                    'status' => true,
+                    'data' => $user,
+                    'message' => 'User Updated Successfully...!',
+                ], 201);
+            }
+            throw new \Exception('User does not have permission to perform this operation...!', 403);
         } catch (\Exception $ex) {
             return response()->json(['status' => false, 'data' => [], 'message' => $ex->getMessage()], 404);
         }

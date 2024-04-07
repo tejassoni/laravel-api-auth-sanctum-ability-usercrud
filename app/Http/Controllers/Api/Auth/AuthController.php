@@ -54,9 +54,10 @@ class AuthController extends Controller
                 $abilities = [
                     'user:create', // user create permission
                     'user:edit', // user edit permission
-                  //  'user:delete', // user delete permission
-                  //  'user:show', // user show permission
-                    'user:list' // user list permission
+                    'user:delete', // user delete permission
+                    'user:show', // user show permission
+                    'user:list', // user list permission
+                    'user:search' // user search permission
                 ];
                 $expiresAt = Carbon::now()->addMinutes(20); // after 20 minutes of login
                 $token = $user->createToken(config('sanctum.token_sanctum'), $abilities, $expiresAt)->plainTextToken; // SANCTUM:ABILITY
@@ -98,9 +99,10 @@ class AuthController extends Controller
             $abilities = [
                 'user:create', // user create permission
                 'user:edit', // user edit permission
-              //  'user:delete', // user delete permission
-              //  'user:show', // user show permission
-              //  'user:list' // user list permission
+                'user:delete', // user delete permission
+                'user:show', // user show permission
+                'user:list', // user list permission
+                'user:search' // user search permission
             ];
             $expiresAt = Carbon::now()->addMinutes(20); // after 20 minutes of login
             $token = $user->createToken(config('sanctum.token_sanctum'), $abilities, $expiresAt)->plainTextToken; // SANCTUM:ABILITY
@@ -115,7 +117,7 @@ class AuthController extends Controller
             ]);
         }
 
-        return response()->json(['status' => true, 'message' => 'Unauthorized, Credentials are not valid...!', 'data' => []], 401);
+        return response()->json(['status' => false, 'message' => 'Unauthorized, Credentials are not valid...!', 'data' => []], 401);
     }
 
     /**

@@ -31,12 +31,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
   });
 
   // USERAPICRUD routes
-  Route::get('user', [\App\Http\Controllers\Api\UserController::class, 'index']);
-  Route::get('user/search', [\App\Http\Controllers\Api\UserController::class, 'filterUser']); // USERFILTER routes
-  Route::post('user/store', [\App\Http\Controllers\Api\UserController::class, 'storeUser']);
-  Route::post('user/update/{id?}', [\App\Http\Controllers\Api\UserController::class, 'updateUser'])->middleware(['ability:user:delete']);
-  Route::get('user/{id?}', [\App\Http\Controllers\Api\UserController::class, 'showUser']);
-  Route::delete('user/delete/{id?}', [\App\Http\Controllers\Api\UserController::class, 'deleteUser']);
+  Route::get('user', [\App\Http\Controllers\Api\UserController::class, 'index'])->middleware('ability:user:list'); // SANCTUM:ABILITY Route Middleware 
+  Route::get('user/search', [\App\Http\Controllers\Api\UserController::class, 'filterUser'])->middleware('ability:user:search'); // USERFILTER, SANCTUM:ABILITY Route Middleware 
+  Route::post('user/store', [\App\Http\Controllers\Api\UserController::class, 'storeUser'])->middleware('ability:user:create'); // SANCTUM:ABILITY Route Middleware
+  Route::put('user/update/{id?}', [\App\Http\Controllers\Api\UserController::class, 'updateUser'])->middleware('ability:user:edit');
+  Route::get('user/{id?}', [\App\Http\Controllers\Api\UserController::class, 'showUser'])->middleware('ability:user:show'); // SANCTUM:ABILITY Route Middleware
+  Route::delete('user/delete/{id?}', [\App\Http\Controllers\Api\UserController::class, 'deleteUser'])->middleware('ability:user:delete'); // SANCTUM:ABILITY Route Middleware;
 
   // Sanctum Auth routes
   Route::get('logout', [AuthController::class, 'logout']);
