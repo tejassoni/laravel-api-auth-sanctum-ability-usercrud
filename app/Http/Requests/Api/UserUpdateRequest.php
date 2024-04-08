@@ -23,7 +23,6 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        dd('Test 123',request()->all());
         return [
             'firstname' => ['required', 'alpha', 'max:100'],
             'lastname' => ['required', 'alpha', 'max:100'],

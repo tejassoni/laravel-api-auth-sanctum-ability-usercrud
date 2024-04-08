@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,7 +11,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Requests\Api\RegisterRequest;
+use App\Http\Requests\Api\GenerateOtpRequest;
 use App\Http\Requests\Api\ForgotPasswordRequest;
+use App\Mail\EmailOtpSend;
 
 class AuthController extends Controller
 {
@@ -78,6 +82,56 @@ class AuthController extends Controller
             return response()->json(['status' => false, 'data' => [], 'message' => $ex->getMessage()], 404);
         }
     }
+
+  
+
+
+    /**
+     * Generate OTP and send email
+     *
+     * @param  GenerateOtpRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function generateOtp(GenerateOtpRequest $request)
+    {
+        // Generate random OTP
+        $sentOtp = rand(100000, 999999);
+
+        // Update user with OTP and timestamp
+        $userUpdated = User::where('email', $request->email)
+                            ->where('mobile', $request->mobile)
+                            ->update([
+                                'otp' => $sentOtp,
+                                'otp_send_at' => now()->format('Y-m-d H:i:s')
+                            ]);
+
+        // Check if user was found and updated
+        if ($userUpdated) {
+            // Prepare email details
+            $mailDetails = [
+                'name' => 'John Cena',
+                'subject' => 'Testing Application OTP',
+                'body' => 'Your OTP is: ' . $sentOtp
+            ];
+
+            // Send email with OTP
+            Mail::to($request->email)->send(new EmailOtpSend($mailDetails));
+
+            // Return success response
+            return response()->json([
+                'status' => true,
+                'message' => 'Email sent successfully! Please check OTP.',
+                'data' => []
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'User email not found into our database...!',
+            'data' => []
+        ], 401);
+    }
+
 
     /**
      * Login user and create token

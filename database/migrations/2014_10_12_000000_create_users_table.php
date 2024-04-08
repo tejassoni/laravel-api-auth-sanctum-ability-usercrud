@@ -25,6 +25,8 @@ return new class extends Migration
             $table->char('pincode',6)->nullable();
             $table->date('birthdate')->nullable();
             $table->timestamp('email_verified_at')->nullable();
+            $table->char('otp',6)->nullable();
+            $table->timestamp('otp_send_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

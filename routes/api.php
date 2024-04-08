@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Auth\AuthController;
 
 // without authorization accessible urls
 Route::post('register', [AuthController::class, 'register']);
+Route::post('generateotp', [AuthController::class, 'generateOtp']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 
